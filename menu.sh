@@ -14,9 +14,9 @@ clear
 ###############################################################
 #Only change this if you know what you are doing
 #Valheim Server Install location(Default) 
-worldpath=/home/steam/.config/unity3d/IronGate/Valheim/worlds
+worldpath=/opt/valheim/.config/unity3d/IronGate/Valheim/worlds
 #Backup Directory ( Default )
-backupPath=/home/steam/backups
+backupPath=/opt/valheim/backups
 ###############################################################
 
 # Set Menu Version
@@ -135,7 +135,7 @@ BRANCH="https://github.com/Nimdy/Dedicated_Valheim_Server_Script/tree/main"
 
 function valheim_update_check() {
 #default install dir
-valheiminstall=/home/steam/valheimserver/
+valheiminstall=/opt/valheim/valheimserver/
 #make temp directory for this Loki file dump
 vaheiminstall_temp=/tmp/lokidump
 loki_started=true
@@ -276,7 +276,7 @@ sleep 1
     tput setaf 2; echo "I swear to LOKI, you better NOT use Special Characters" ; tput setaf 9; 
 done
 echo ""
-cat >> /home/steam/serverSetup.txt <<EOF
+cat >> /opt/valheim/serverSetup.txt <<EOF
 Here is the information you entered
 This information is for you to ref later, in case you forgot
 ---------------------------------------------------------------
@@ -288,11 +288,11 @@ Valheim Server Password: $password
 Each time this is ran, the past info will be added to each line
 ---------------------------------------------------------------
 EOF
-chown steam:steam /home/steam/serverSetup.txt
+chown steam:steam /opt/valheim/serverSetup.txt
 clear
 echo "Here is the information you entered"
 echo "This information is saved in the valheim_server.sh file"
-echo "This information is saved in /home/steam/serverSetup.txt for referance later, if you forget"
+echo "This information is saved in /opt/valheim/serverSetup.txt for referance later, if you forget"
 tput setaf 2; echo "---------------------------------------" ; tput setaf 9;
 tput setaf 2; echo "nonroot steam password:  $userpassword " ; tput setaf 9;
 tput setaf 2; echo "Public Server Name:      $displayname " ; tput setaf 9;
@@ -315,36 +315,36 @@ sleep 1
 tput setaf 1; echo "Building steam account NONROOT" ; tput setaf 9;
 sleep 1
 useradd --create-home --shell /bin/bash --password $userpassword steam
-cp /etc/skel/.bashrc /home/steam/.bashrc
-cp /etc/skel/.profile /home/steam/.profile
+cp /etc/skel/.bashrc /opt/valheim/.bashrc
+cp /etc/skel/.profile /opt/valheim/.profile
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
 #build symbolic link for steamcmd
 tput setaf 1; echo "Building symbolic link for steamcmd" ; tput setaf 9;
-ln -s /usr/games/steamcmd /home/steam/steamcmd
+ln -s /usr/games/steamcmd /opt/valheim/steamcmd
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
 #chown steam user to steam
 tput setaf 1; echo "Setting steam permissions" ; tput setaf 9;
-chown -Rf steam:steam /home/steam/*
+chown -Rf steam:steam /opt/valheim/*
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
 #Download Valheim from steam
 tput setaf 1; echo "Downloading and installing Valheim from Steam" ; tput setaf 9;
 sleep 1
-/home/steam/steamcmd +login anonymous +force_install_dir /home/steam/valheimserver +app_update 896660 validate +exit
+/opt/valheim/steamcmd +login anonymous +force_install_dir /opt/valheim/valheimserver +app_update 896660 validate +exit
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
 #build config for start_valheim.sh
 tput setaf 1; echo "Deleting old configuration if file exist" ; tput setaf 9;  
 tput setaf 1; echo "Building Valheim start_valheim server configuration" ; tput setaf 9;
-rm /home/steam/valheimserver/start_valheim.sh
+rm /opt/valheim/valheimserver/start_valheim.sh
 sleep 1
-cat >> /home/steam/valheimserver/start_valheim.sh <<EOF
+cat >> /opt/valheim/valheimserver/start_valheim.sh <<EOF
 #!/bin/bash
 export templdpath=$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=./linux64:$LD_LIBRARY_PATH
@@ -360,9 +360,9 @@ sleep 1
 #build check log script
 tput setaf 1; echo "Deleting old configuration if file exist" ; tput setaf 9; 
 tput setaf 1; echo "Building check log script" ; tput setaf 9;
-rm /home/steam/check_log.sh
+rm /opt/valheim/check_log.sh
 sleep 1
-cat >> /home/steam/check_log.sh <<EOF
+cat >> /opt/valheim/check_log.sh <<EOF
 journalctl --unit=valheimserver --reverse
 EOF
 tput setaf 2; echo "Done" ; tput setaf 9;
@@ -370,10 +370,10 @@ sleep 1
 
 #set execute permissions
 tput setaf 1; echo "Setting execute permissions on start_valheim.sh" ; tput setaf 9;
-chmod +x /home/steam/valheimserver/start_valheim.sh
+chmod +x /opt/valheim/valheimserver/start_valheim.sh
 tput setaf 2; echo "Done" ; tput setaf 9;
 tput setaf 1; echo "Setting execute permissions on check_log.sh" ; tput setaf 9; 
-chmod +x /home/steam/check_log.sh
+chmod +x /opt/valheim/check_log.sh
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
@@ -400,11 +400,11 @@ StartLimitInterval=60s
 StartLimitBurst=3
 User=steam
 Group=steam
-ExecStartPre=/home/steam/steamcmd +login anonymous +force_install_dir /home/steam/valheimserver +app_update 896660 validate +exit
-ExecStart=/home/steam/valheimserver/start_valheim.sh
+ExecStartPre=/opt/valheim/steamcmd +login anonymous +force_install_dir /opt/valheim/valheimserver +app_update 896660 validate +exit
+ExecStart=/opt/valheim/valheimserver/start_valheim.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 KillSignal=SIGINT
-WorkingDirectory=/home/steam/valheimserver
+WorkingDirectory=/opt/valheim/valheimserver
 LimitNOFILE=100000
 [Install]
 WantedBy=multi-user.target
@@ -413,8 +413,8 @@ tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
 #chown steam user permissions to all of user steam dir location
-tput setaf 1; echo "Setting steam account permissions to /home/steam/*" ; tput setaf 9; 
-chown steam:steam -Rf /home/steam/*
+tput setaf 1; echo "Setting steam account permissions to /opt/valheim/*" ; tput setaf 9; 
+chown steam:steam -Rf /opt/valheim/*
 tput setaf 2; echo "Done" ; tput setaf 9;
 sleep 1
 
@@ -484,7 +484,7 @@ function backup_world_data() {
          echo "Valheim Server Service Started"
 	 echo ""
 	 echo "Setting permissions for steam on backup file"
-	 chown -Rf steam:steam /home/steam/backups
+	 chown -Rf steam:steam /opt/valheim/backups
 	 echo "Process complete!"
     echo ""
 
@@ -524,7 +524,7 @@ echo -ne "
 $(ColorRed '-----------------------------------------------')
 $(ColorGreen 'Restore '${restorefile}' ?')
 $(ColorGreen  'Are you sure you want to do this? ')
-$(ColorOrange  'Remember to match world name with /home/steam/valheimserver/start_valheim.sh')
+$(ColorOrange  'Remember to match world name with /opt/valheim/valheimserver/start_valheim.sh')
 $(ColorOrange  'The param for -world "worldname" much match restore file worldname.db and worldname.fwl')
 $(ColorGreen   'Press y(yes) or n(no)') "
 
@@ -544,7 +544,7 @@ $(ColorGreen   'Press y(yes) or n(no)') "
  #untar
         echo "Unpacking ${worldpath}/${restorefile}"
         tar xzf ${worldpath}/${restorefile} --strip-components=7 --directory ${worldpath}/  
-	chown -Rf steam:steam /home/steam/.config/unity3d/IronGate/Valheim/worlds/*
+	chown -Rf steam:steam /opt/valheim/.config/unity3d/IronGate/Valheim/worlds/*
 	#uncomment when test are 100%
 	#last time steam was applied to /usr and other locations 
 	#really jacked stuff up - DAMN IT LOKI!!!
@@ -568,7 +568,7 @@ function check_apply_server_updates() {
     echo ""
     echo "Checking up Valheim Updates and Applying it"
     #Thanks to @lloesche for the throught process and function
-    valheiminstall=/home/steam/valheimserver/
+    valheiminstall=/opt/valheim/valheimserver/
     #make temp directory for this Loki file dump
     vaheiminstall_temp=/tmp/lokidump
     loki_started=true
@@ -629,7 +629,7 @@ done
 function display_start_valheim() {
     clear
     echo ""
-    sudo cat /home/steam/valheimserver/start_valheim.sh
+    sudo cat /opt/valheim/valheimserver/start_valheim.sh
     echo ""
 
 }
@@ -757,7 +757,7 @@ function display_valheim_server_status() {
 function display_start_valheim() {
     clear
     echo ""
-    sudo cat /home/steam/valheimserver/start_valheim.sh
+    sudo cat /opt/valheim/valheimserver/start_valheim.sh
     echo ""
 
 }

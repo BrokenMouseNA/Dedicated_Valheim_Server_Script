@@ -8,10 +8,10 @@
 
 # There are 4 things you need to change!
 # NOTE: Minimum password length is 5 characters & Password cant be in the server name.
-userpassword='"user_password"'
-password='"passw0rd"'
-displayname='"server display name"'
-worldname='"111111111"'
+userpassword='"foo"'
+password='"bar"'
+displayname='"FooArvika"'
+worldname='"Fooaa 1"'
 
 #check for updates and upgrade the system auto yes
 tput setaf 2; echo "Checking for upgrades"
@@ -63,14 +63,14 @@ sleep 1
 
 #build symbolic link for steamcmd
 tput setaf 1; echo "Building symbolic link for steamcmd"
-ln -s /usr/games/steamcmd /home/steam/steamcmd
+ln -s /usr/games/steamcmd /opt/valheim/steamcmd
 tput setaf 2; echo "Done"
 tput setaf 9;
 sleep 1
 
 #chown steam user to steam
 tput setaf 1; echo "Setting steam permissions"
-chown steam:steam /home/steam/steamcmd
+chown steam:steam /opt/valheim/steamcmd
 tput setaf 2; echo "Done"
 tput setaf 9;
 sleep 1
@@ -79,7 +79,7 @@ sleep 1
 tput setaf 1; echo "Downloading and installing Valheim from Steam"
 sleep 1
 tput setaf 9;
-/home/steam/steamcmd +login anonymous +force_install_dir /home/steam/valheimserver +app_update 896660 validate +exit
+/opt/valheim/steamcmd +login anonymous +force_install_dir /opt/valheim/valheimserver +app_update 896660 validate +exit
 tput setaf 2; echo "Done"
 tput setaf 9;
 sleep 1
@@ -87,9 +87,9 @@ sleep 1
 #build config for start_valheim.sh
 tput setaf 1; echo "Deleting old configuration if file exist"
 tput setaf 1; echo "Building Valheim start_valheim server configuration"
-rm /home/steam/valheimserver/start_valheim.sh
+rm /opt/valheim/valheimserver/start_valheim.sh
 sleep 1
-cat >> /home/steam/valheimserver/start_valheim.sh <<EOF
+cat >> /opt/valheim/valheimserver/start_valheim.sh <<EOF
 #!/bin/bash
 export templdpath=$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=./linux64:$LD_LIBRARY_PATH
@@ -108,9 +108,9 @@ sleep 1
 #build check log script
 tput setaf 1; echo "Deleting old configuration if file exist"
 tput setaf 1; echo "Building check log script"
-rm /home/steam/check_log.sh
+rm /opt/valheim/check_log.sh
 sleep 1
-cat >> /home/steam/check_log.sh <<EOF
+cat >> /opt/valheim/check_log.sh <<EOF
 journalctl --unit=valheimserver --reverse
 EOF
 tput setaf 2; echo "Done"
@@ -119,10 +119,10 @@ sleep 1
 
 #set execute permissions
 tput setaf 1; echo "Setting execute permissions on start_valheim.sh"
-chmod +x /home/steam/valheimserver/start_valheim.sh
+chmod +x /opt/valheim/valheimserver/start_valheim.sh
 tput setaf 2; echo "Done"
 tput setaf 1; echo "Setting execute permissions on check_log.sh"
-chmod +x /home/steam/check_log.sh
+chmod +x /opt/valheim/check_log.sh
 tput setaf 2; echo "Done"
 tput setaf 9;
 sleep 1
@@ -146,11 +146,11 @@ StartLimitInterval=60s
 StartLimitBurst=3
 User=steam
 Group=steam
-ExecStartPre=/home/steam/steamcmd +login anonymous +force_install_dir /home/steam/valheimserver +app_update 896660 validate +exit
-ExecStart=/home/steam/valheimserver/start_valheim.sh
+ExecStartPre=/opt/valheim/steamcmd +login anonymous +force_install_dir /opt/valheim/valheimserver +app_update 896660 validate +exit
+ExecStart=/opt/valheim/valheimserver/start_valheim.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 KillSignal=SIGINT
-WorkingDirectory=/home/steam/valheimserver
+WorkingDirectory=/opt/valheim/valheimserver
 LimitNOFILE=100000
 
 [Install]
@@ -161,8 +161,8 @@ tput setaf 9;
 sleep 1
 
 #chown steam user permissions to all of user steam dir location
-tput setaf 1; echo "Setting steam account permissions to /home/steam/*"
-chown -Rf steam:steam /home/steam/*
+tput setaf 1; echo "Setting steam account permissions to /opt/valheim/*"
+chown -Rf steam:steam /opt/valheim/*
 tput setaf 2; echo "Done"
 tput setaf 9;
 sleep 1
